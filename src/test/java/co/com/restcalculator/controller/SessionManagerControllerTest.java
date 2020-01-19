@@ -47,7 +47,7 @@ class SessionManagerControllerTest {
 			ReflectionTestUtils.setField(sessionManager, "sessionRepository", null);
 			ResponseEntity<Status> response = sessionManager.createSession();
 			assertNotNull(response.getBody());
-			assertEquals("An error has been occured", response.getBody().getCode());
+			assertEquals(ConstantsServices.ERROR_CODE, response.getBody().getCode());
 			assertTrue(!response.getBody().getMessage().isEmpty());
 		});
 	}
