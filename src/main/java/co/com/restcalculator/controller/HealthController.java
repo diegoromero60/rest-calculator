@@ -10,7 +10,7 @@ import co.com.restcalculator.domain.Status;
 
 @RestController
 @RequestMapping(path = "/health")
-public class Health {
+public class HealthController {
 	
 	@GetMapping(path = "/status")
 	public ResponseEntity<Status> getStatus() {
