@@ -30,7 +30,6 @@ import co.com.restcalculator.domain.Status;
 import co.com.restcalculator.domain.session.Session;
 import co.com.restcalculator.repositories.SessionRepository;
 
-
 import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(SpringExtension.class)
@@ -38,20 +37,20 @@ class SessionManagerControllerTest {
 
 	@Mock
 	private SessionManagerController sessionManager;
-	
+
 	@Mock
 	private SessionRepository sessionRepository;
-	
+
 	@BeforeEach
 	public void beforeEach() {
 		MockitoAnnotations.initMocks(this);
 		ReflectionTestUtils.setField(sessionManager, "sessionRepository", sessionRepository);
-		when(sessionManager.createSession()).thenCallRealMethod();
 		when(sessionRepository.save(any())).thenReturn(Session.builder().id("TEST").creationDate(new Date()).build());
+		when(sessionManager.createSession()).thenCallRealMethod();
 	}
 
 	@Test
-	void whenCreationServiceIsCallGivenValidRequestThenGetValidResponse() {
+	void whenCreationServiceIsCallGivenValidReqSessionManagerControlleruestThenGetValidResponse() {
 		assertDoesNotThrow(() -> {
 			ResponseEntity<Status> response = sessionManager.createSession();
 			assertNotNull(response.getBody());
