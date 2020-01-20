@@ -1,53 +1,64 @@
 package co.com.restcalculator.controller;
 
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import co.com.restcalculator.configurations.ConstantsServices;
 import co.com.restcalculator.domain.RequestAddNumbers;
 import co.com.restcalculator.domain.Status;
+import co.com.restcalculator.domain.session.Session;
+import co.com.restcalculator.repositories.SessionRepository;
+import co.com.restcalculator.controller.mock.NumberControllerMock;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+
+@ExtendWith(SpringExtension.class)
 class NumbersControllerTest {
 
-	@LocalServerPort
-	private int port;
+	@Mock
+	private NumberControllerMock numberControllerMock;
 
-	@Autowired
-	private TestRestTemplate restTemplate;
+	@Mock
+	private SessionRepository sessionRepository;
 
-	@Autowired
-	private NumbersController numbersController;
+	@BeforeEach
+	public void beforeEach() {
+		MockitoAnnotations.initMocks(this);
+		ReflectionTestUtils.setField(numberControllerMock, "sessionRepository", sessionRepository);
+		when(sessionRepository.save(any())).thenReturn(Session.builder().id("TEST").creationDate(new Date()).build());
+		when(sessionRepository.findById(anyString())).thenReturn(Optional.of(Session.builder().build()));
+		when(numberControllerMock.addNumber(any(RequestAddNumbers.class))).thenCallRealMethod();
+	}
 
 	@Test
 	void whenAddNumberIsCallGivenValidRequestThenGetValidResponse() {
 		assertDoesNotThrow(() -> {
-			ResponseEntity<Status> responseCreation = restTemplate.getForEntity(
-					new URL(String.format("http://localhost:%d%s", port, ConstantsServices.SERVICE_CREATE_SESSION_PATH))
-							.toString(),
-					Status.class);
 			List<Float> numbersList = new ArrayList<>();
 			numbersList.add(4f);
 			numbersList.add(4f);
 			RequestAddNumbers request = RequestAddNumbers.builder().numbersList(numbersList)
-					.sessionCode(responseCreation.getBody().getMessage()).build();
-			ResponseEntity<Status> response = restTemplate.postForEntity(
-					new URL(String.format("http://localhost:%d%s", port, ConstantsServices.SERVICE_ADD_NUMBERS_PATH))
-							.toString(),
-					request, Status.class);
+					.sessionCode("4411").build();
+			ResponseEntity<Status> response = numberControllerMock.addNumber(request);
 			assertNotNull(response.getBody());
 			assertEquals(ConstantsServices.SUCCES_CODE, response.getBody().getCode());
 			assertTrue(!response.getBody().getMessage().isEmpty());
@@ -55,17 +66,15 @@ class NumbersControllerTest {
 	}
 
 	@Test
-	void whenAddNumberIsCallGivenInValidRequestThenGetErrorResponse() {
+	void whenAddNumberIsCallGivenEmptyIdThenGetErrorResponse() {
+		when(sessionRepository.findById(any())).thenReturn(Optional.empty());
 		assertDoesNotThrow(() -> {
 			List<Float> numbersList = new ArrayList<>();
 			numbersList.add(4f);
 			numbersList.add(4f);
-			RequestAddNumbers request = RequestAddNumbers.builder().numbersList(numbersList).sessionCode("fjsdkd")
-					.build();
-			ResponseEntity<Status> response = restTemplate.postForEntity(
-					new URL(String.format("http://localhost:%d%s", port, ConstantsServices.SERVICE_ADD_NUMBERS_PATH))
-							.toString(),
-					request, Status.class);
+			RequestAddNumbers request = RequestAddNumbers.builder().numbersList(numbersList)
+					.sessionCode("4411").build();
+			ResponseEntity<Status> response = numberControllerMock.addNumber(request);
 			assertNotNull(response.getBody());
 			assertEquals(ConstantsServices.ERROR_CODE_SESSION_NOT_FOUND, response.getBody().getCode());
 			assertTrue(!response.getBody().getMessage().isEmpty());
