@@ -1,6 +1,6 @@
 node {
     def app
-    def registry = "diegoromero60/test"
+    def registry = "diegoromero60/rest-calculator"
     def registryCredential = 'docker-hub-credentials'
     def dockerImage = ''
     def HOST_DB_CALCULATOR = "192.168.0.5:27017"

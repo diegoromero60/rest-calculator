@@ -1,0 +1,60 @@
+{
+	"info": {
+		"_postman_id": "bd59adb1-d298-4b79-a3ae-914d823de39b",
+		"name": "dev",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "localhost:9001/add-numbers",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"SessionCode\": \"1\",\n    \"NumbersList\": [\n        1,\n        2\n    ]\n}"
+				},
+				"url": {
+					"raw": "localhost:9001/add-numbers",
+					"host": [
+						"localhost"
+					],
+					"port": "9001",
+					"path": [
+						"add-numbers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ocalhost:9001/create-session",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:9001/process-numbers",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
