@@ -26,14 +26,17 @@ public class SessionManagerController {
 	@RequestMapping(path = ConstantsServices.SERVICE_CREATE_SESSION_PATH, method = RequestMethod.GET)
 	public ResponseEntity<Status> createSession() {
 		try {
-		Session newObject = sessionRepository.save(Session.builder().creationDate(new Date()).build());
-		return new ResponseEntity<Status>(Status.builder().code(ConstantsServices.SUCCES_CODE).message(newObject.getId()).build(), HttpStatus.OK);
-		}
-		catch (Exception e) {
+			Session newObject = sessionRepository.save(Session.builder().creationDate(new Date()).build());
+			return new ResponseEntity<Status>(
+					Status.builder().code(ConstantsServices.SUCCES_CODE).message(newObject.getId()).build(),
+					HttpStatus.OK);
+		} catch (Exception e) {
 			log.error(ConstantsServices.ERROR_MESSAGE, e);
 		}
-		return new ResponseEntity<Status>(Status.builder().code(ConstantsServices.ERROR_CODE).message(ConstantsServices.ERROR_MESSAGE).build(), HttpStatus.OK);
-		
+		return new ResponseEntity<Status>(
+				Status.builder().code(ConstantsServices.ERROR_CODE).message(ConstantsServices.ERROR_MESSAGE).build(),
+				HttpStatus.OK);
+
 	}
 
 	@RequestMapping(path = "/findAllSessions", method = RequestMethod.GET)
